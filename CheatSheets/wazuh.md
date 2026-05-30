@@ -1,55 +1,89 @@
-#Wazuh
+# Wazuh Setup & Configuration Guide
+> **Guía práctica para la instalación del servidor Wazuh, despliegue de agentes e integración del detector de vulnerabilidades.**
 
-El primer paso es instalar wazuh en el servidor con este comando:
+---
 
-```bash
-sudo lvextend -l +100%FREE /dev/mapper/ubuntu--vg-ubuntu--lv
-sudo resize2fs /dev/mapper/ubuntu--vg-ubuntu--lv
+## 1. Instalación del Servidor Wazuh
 
-curl -sO https://packages.wazuh.com/4.14/wazuh-install.sh && sudo bash ./wazuh-install.sh -a
-```
+Antes de realizar la instalación, asegúrate de expandir el volumen de almacenamiento lógico en tu sistema (si es necesario) y descargar el instalador oficial.
 
-Luego accederemos a la interfaz web de wazuh con la siguiente URL:
+* **Extender volumen lógico y redimensionar el sistema de archivos (Ubuntu)**:
+  ```bash
+  sudo lvextend -l +100%FREE /dev/mapper/ubuntu--vg-ubuntu--lv
+  sudo resize2fs /dev/mapper/ubuntu--vg-ubuntu--lv
+  ```
+* **Descargar y ejecutar el script de instalación todo en uno**:
+  ```bash
+  curl -sO https://packages.wazuh.com/4.14/wazuh-install.sh && sudo bash ./wazuh-install.sh -a
+  ```
+  > [!IMPORTANT]
+  > Al finalizar la instalación, el script imprimirá en consola las credenciales de acceso por defecto (usuario `admin` y una contraseña aleatoria). Asegúrate de guardarlas.
 
-```
-https://<IP_ADDRESS>
-```
-El usuario y contraseña nos lo dará el script de instalación al final de ella.
+* **Acceso a la interfaz web de administración**:
+  Abre tu navegador e ingresa a la siguiente URL (reemplazando por la dirección IP de tu servidor):
+  ```http
+  https://<IP_SERVIDOR_WAZUH>
+  ```
 
-Una vez dentro de la interfaz web, podemos agregar agentes a nuestro servidor wazuh para monitorear nuestros sistemas. Para agregar un agente, debemos seguir los siguientes pasos:
-1. En la interfaz web de wazuh, ir a la sección "Agents management" y hacer clic en "summary" y ahí en "Add new agent".
+---
 
-2. Aquí tendrás que introducir el sistema operativo, en nuestro caso deb amd64, el nombre del agente, la IP del servidor wazuh y el grupo al que quieres que pertenezca el agente.
+## 2. Despliegue e Incorporación de Agentes
 
-3. En esa misma ventana tendremos un paso que nos dará el comando para copiar y pegar en el agente que queremos monitorear.
+Para comenzar a monitorear un host (cliente), debes registrarlo como agente en el panel web.
 
-4. Luego una vez instalado el agente, nos dará en la propia web otro comando que es para reiniciar los servicios del agente y así empezar a monitorear el sistema.
+1. **Generar el comando de registro**:
+   * En la interfaz web de Wazuh, dirígete a **Agents management** > **Summary** > **Add new agent**.
+   * Selecciona los parámetros correspondientes de tu máquina cliente:
+     * Sistema operativo (ej. `Debian/Ubuntu` - arquitectura `amd64`).
+     * Dirección IP del servidor Wazuh.
+     * Nombre descriptivo para identificar al agente.
+     * Grupo al que pertenecerá el agente.
+2. **Ejecutar el comando de instalación en la máquina cliente**:
+   Copia el comando generado por la web y ejecútalo en la terminal del host cliente para instalar el paquete del agente.
+3. **Iniciar el agente**:
+   Ejecuta el comando indicado en la misma pantalla del asistente para iniciar y habilitar el servicio en la máquina cliente:
+   ```bash
+   sudo systemctl daemon-reload
+   sudo systemctl enable wazuh-agent
+   sudo systemctl start wazuh-agent
+   ```
+4. **Verificación**:
+   Una vez completados los pasos, confirma que el agente figura en estado activo (Active) en la sección **Summary** de la web de Wazuh.
 
-Una vez que el agente esté instalado y configurado, podremos ver que está activo en "summary", ahora en el servidor haremos lo siguiente:
+---
 
-```bash
-sudo su
-nano /var/ossec/etc/internal_options.conf
-```
-Aquí buscaremos la línea que habla de vulnerability detector y scan manager y cambiaremos el 1 por un 0 para activar la funcion de escaneo de vulnerabilidades.
+## 3. Activación del Detector de Vulnerabilidades
 
-```bash
-# Vulnerability detector - Enable or disable the scan manager
-# 0. Enabled
-# 1. Disabled
-vulnerability-detection.disable_scan_manager=1
-```
-Luego reiniciamos el servicio de wazuh para que los cambios tengan efecto:
+Por defecto, el módulo de detección de vulnerabilidades puede estar desactivado en el gestor. Sigue estos pasos en el **Servidor** para habilitarlo.
 
-```bash
-sudo systemctl restart wazuh-manager
-```
-Ahora ya tendremos el escaneo de vulnerabilidades activado y podremos ver los resultados en la interfaz web de wazuh. Para ver los resultados, debemos ir a la sección "Vulnerability detection" luego iremos a endpoint security ahí a configuration assesment y ahi vemos el resultado de los test que se han pasado y los que no se han pasado. cada test que no se haya pasado te dirá que comando usar y que hay que modificar para pasar el test.
+1. **Editar el archivo de configuración interna**:
+   ```bash
+   sudo nano /var/ossec/etc/internal_options.conf
+   ```
+2. **Habilitar el Gestor de Escaneo**:
+   Busca la directiva del detector de vulnerabilidades y cambia el valor a `0` para activarla (cambiar de `1` a `0`):
+   ```ini
+   # Vulnerability detector - Enable or disable the scan manager
+   # 0. Enabled
+   # 1. Disabled
+   vulnerability-detection.disable_scan_manager=0
+   ```
+3. **Reiniciar el servicio del Administrador de Wazuh** para aplicar los cambios:
+   ```bash
+   sudo systemctl restart wazuh-manager
+   ```
 
-Luego de seguir todos los pasos, tendremos que reiniciar en el cliente el servicio de wazuh para que los cambios tengan efecto:
+---
 
-```bash
-sudo systemctl restart Wazuh-agent.service
-```
+## 4. Auditoría y Verificación de Vulnerabilidades
 
-Y al darle a F5 en la interfaz web de wazuh, podremos ver que el agente ha pasado todos los test y ya tenemos nuestro sistema monitoreado y protegido contra vulnerabilidades.
+Una vez activado el escaneo, puedes visualizar el estado de seguridad en la consola web:
+
+1. Dirígete a la sección **Vulnerability detection** > **Endpoint security**.
+2. Accede a **Configuration assessment** para inspeccionar las pruebas de cumplimiento de seguridad realizadas en el agente (tests aprobados y fallidos).
+3. **Solución de debilidades**: Cada test que no haya sido superado indicará detalladamente el comando recomendado y la configuración que debes modificar en el cliente para mitigar el riesgo.
+4. **Actualizar el agente**: Tras aplicar las correcciones recomendadas en el cliente, reinicia su servicio para forzar un nuevo reporte:
+   ```bash
+   sudo systemctl restart wazuh-agent
+   ```
+5. Recarga la consola web (F5) para verificar que las correcciones han surtido efecto y el sistema figura como protegido.
