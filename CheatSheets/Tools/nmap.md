@@ -1,17 +1,18 @@
 # Nmap Cheat Sheet
-> **Guía rápida de comandos para el escaneo de puertos, detección de servicios, uso de scripts (NSE) y evasión de firewalls.**
+
+Comandos esenciales de Nmap para el escaneo de puertos, descubrimiento de servicios, automatización con scripts (NSE) y evasión de firewalls.
 
 ---
 
-## 🚀 Escaneos Esenciales
+## 1. Escaneos Esenciales
 
 * **Escaneo rápido TCP (todos los puertos)**:
-  Identifica puertos abiertos a alta velocidad exportando los resultados en formato grepable.
+  Identificación rápida de puertos abiertos y guardado en formato grepable (`.gnmap`):
   ```bash
   nmap -p- --open -sS --min-rate 5000 -n -Pn <IP> -oG allPorts
   ```
-* **Escaneo exhaustivo (Detección de versiones, S.O. y scripts básicos)**:
-  Se ejecuta sobre los puertos específicos encontrados en el paso anterior.
+* **Escaneo de servicios y scripts de puertos específicos**:
+  Ejecución de versiones y scripts por defecto en los puertos detectados:
   ```bash
   nmap -p<PUERTOS> -sCV <IP> -oN targeted
   ```
@@ -26,19 +27,17 @@
 
 ---
 
-## 🛠️ Scripts del Motor de Nmap (NSE)
+## 2. Scripts del Motor de Nmap (NSE)
 
-Nmap incluye una amplia colección de scripts para enumeración avanzada y detección de vulnerabilidades.
-
-* **Ejecutar una categoría completa de scripts (safe, vuln, discovery)**:
+* **Ejecutar una categoría de scripts (vuln, discovery, safe)**:
   ```bash
   nmap -p<PUERTOS> --script=vuln <IP>
   ```
-* **Buscar scripts específicos por palabra clave**:
+* **Buscar scripts locales**:
   ```bash
   locate .nse | grep "smb"
   ```
-* **Scripts populares por protocolo**:
+* **Scripts comunes por servicio**:
   * **SMB (445)**:
     ```bash
     nmap -p 445 --script="smb-vuln-* or smb-enum-*" <IP>
@@ -58,30 +57,28 @@ Nmap incluye una amplia colección de scripts para enumeración avanzada y detec
 
 ---
 
-## 🛡️ Evasión de Firewalls y EDRs
-
-Técnicas útiles en auditorías internas donde existen sistemas de detección de intrusos.
+## 3. Evasión de Firewalls y EDRs
 
 * **Fragmentación de paquetes (`-f`)**:
-  Divide las cabeceras TCP en fragmentos pequeños para evadir filtros.
+  Fragmentar cabeceras TCP para dificultar la reconstrucción del flujo de escaneo:
   ```bash
   nmap -f <IP>
   ```
-* **Especificar MTU personalizado (debe ser múltiplo de 8)**:
+* **MTU personalizado (debe ser múltiplo de 8)**:
   ```bash
   nmap --mtu 24 <IP>
   ```
-* **Simular origen usando señuelos (Decoy - `-D`)**:
-  Mezcla tu dirección IP real con IPs falsas en los registros del IDS.
+* **Simulación de direcciones origen (Decoy - `-D`)**:
+  Ocultar la IP del escáner mezclándola con direcciones origen señuelo:
   ```bash
   nmap -D 192.168.1.5,192.168.1.9,ME <IP>
   ```
-* **Cambiar el puerto de origen (Source Port - `--source-port` o `-g`)**:
-  Fuerza a Nmap a enviar paquetes desde un puerto comúnmente permitido (ej. DNS/53 o HTTP/80).
+* **Cambiar el puerto origen (`--source-port` / `-g`)**:
+  Simular tráfico desde puertos permitidos por firewalls (e.g. DNS/53 o HTTP/80):
   ```bash
   nmap -g 53 <IP>
   ```
-* **Establecer un retraso entre peticiones (Evitar picos de tráfico)**:
+* **Retraso de escaneo (Scan Delay)**:
   ```bash
   nmap --scan-delay 5s <IP>
   ```
