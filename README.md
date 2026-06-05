@@ -10,6 +10,7 @@ Repositorio de referencia técnica y comandos rápidos para auditoría de sistem
 | :--- | :--- | :--- |
 | **Active Directory** | [Pentesting AD](CheatSheets/Pentesting_AD.md) | Enumeración, explotación y movimiento lateral en dominios. |
 | **Linux** | [Pentesting Linux](CheatSheets/Pentesting_Linux.md) | Reconocimiento local, escalada de privilegios y persistencia. |
+| **Linux (Archivos)** | [Archivos Sensibles Linux](CheatSheets/Linux_Sensitive_Files.md) | Catálogo de archivos críticamente sensibles y rutas de interés en auditorías. |
 | **Windows** | [Pentesting Windows](CheatSheets/Pentesting_Windows.md) | Técnicas locales, evasión y escalada de privilegios. |
 | **Forense** | [Volatility 3 para Windows](CheatSheets/volatility3_windows.md) | Análisis de memoria RAM, plugins de registro y forense digital. |
 | **Defensivo / SIEM** | [Wazuh](CheatSheets/wazuh.md) | Despliegue de servidores, agentes y análisis de vulnerabilidades. |
