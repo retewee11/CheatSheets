@@ -1,6 +1,9 @@
-# NetExec Cheat Sheet
+# NetExec & CrackMapExec Cheat Sheet
 
-Comandos rápidos para NetExec (`nxc`) y CrackMapExec para la auditoría, enumeración y movimiento lateral de red.
+Comandos rápidos para **NetExec** (`nxc`) y **CrackMapExec** (`cme`) para auditoría de servicios, enumeración de red, extracción de credenciales y movimiento lateral.
+
+> [!NOTE]
+> **NetExec (`nxc`)** es el sucesor y fork oficial activo de **CrackMapExec (`cme`)**. Todos los comandos de esta guía funcionan de forma idéntica sustituyendo `nxc` por `crackmapexec` o `cme` (ejemplo: `cme smb <IP> -u 'admin' -p 'pass'`).
 
 ---
 

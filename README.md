@@ -31,7 +31,7 @@ Repositorio de referencia técnica y comandos rápidos para auditoría de sistem
 | **Msfvenom** | [Msfvenom Payloads](CheatSheets/Tools/msfvenom.md) | Generación de payloads binarios y web por plataforma. |
 | **Transferencia de Archivos** | [Transferencia de Archivos](CheatSheets/Tools/file_transfers.md) | Métodos de descarga en Windows (certutil, PS, SMB) y Linux (wget, curl, nc). |
 | **Reverse Shells** | [Reverse Shells & Payloads](CheatSheets/Tools/reverse_shells.md) | One-liners en Bash, Python, PHP, PowerShell y bypasses en Base64. |
-| **NetExec** | [NetExec](CheatSheets/Tools/netexec.md) | Auditoría de servicios SMB, LDAP, WinRM, SSH y MSSQL. |
+| **NetExec / CrackMapExec** | [NetExec & CrackMapExec](CheatSheets/Tools/netexec.md) | Auditoría de servicios SMB, LDAP, WinRM, SSH y MSSQL con NetExec (`nxc`) y CrackMapExec (`cme`). |
 | **Enumeración SMB / RPC** | [SMB & RPC Enumeration](CheatSheets/Tools/enum_smb.md) | Auditoría SMB/RPC con enum4linux, smbclient, smbmap y rpcclient. |
 | **Impacket** | [Impacket Suite](CheatSheets/Tools/impacket.md) | Movimiento lateral, extracción de hashes y operaciones Kerberos. |
 | **Hydra** | [Hydra Brute Force](CheatSheets/Tools/hydra.md) | Ataques de fuerza bruta a servicios de red (SSH, FTP, SMB, RDP, HTTP-FORM). |
