@@ -4,7 +4,34 @@ Comandos esenciales de Nmap para el escaneo de puertos, descubrimiento de servic
 
 ---
 
-## 1. Escaneos Esenciales
+## 1. Descubrimiento de Hosts (Host Discovery / Ping Sweep)
+
+Identificar qué equipos están encendidos en una subred sin escanear puertos:
+
+* **Ping Sweep básico de subred (`-sn`)**:
+  Envía sondas ICMP Echo y peticiones TCP/ARP para encontrar hosts activos:
+  ```bash
+  nmap -sn 192.168.1.0/24
+  ```
+* **ARP Ping Sweep (Ultra rápido en red local LAN / Capa 2)**:
+  Infallible en redes locales aunque el firewall del objetivo bloquee ICMP/Ping:
+  ```bash
+  nmap -sn -PR 192.168.1.0/24
+  ```
+* **Descubrimiento por SYN/ACK a puertos comunes (`-PS` / `-PA`)**:
+  Útil cuando ICMP está bloqueado pero queremos probar puertos clave (22, 80, 445):
+  ```bash
+  nmap -sn -PS22,80,443,445 192.168.1.0/24
+  ```
+* **Herramientas de descubrimiento rápido en red local**:
+  ```bash
+  arp-scan --interface=eth0 192.168.1.0/24
+  netdiscover -r 192.168.1.0/24
+  ```
+
+---
+
+## 2. Escaneos Esenciales de Puertos
 
 * **Escaneo rápido TCP (todos los puertos)**:
   Identificación rápida de puertos abiertos y guardado en formato grepable (`.gnmap`):
