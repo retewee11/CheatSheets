@@ -37,6 +37,7 @@ Repositorio de referencia técnica y comandos rápidos para auditoría de sistem
 | **Hydra** | [Hydra Brute Force](CheatSheets/Tools/hydra.md) | Ataques de fuerza bruta a servicios de red (SSH, FTP, SMB, RDP, HTTP-FORM). |
 | **Searchsploit** | [Searchsploit](CheatSheets/Tools/searchsploit.md) | Búsqueda e inspección offline de vulnerabilidades y exploits de ExploitDB. |
 | **Escáneres Web** | [Nikto & WPScan](CheatSheets/Tools/web_scanners.md) | Escaneo automático de servidores web y sitios WordPress. |
+| **Cadaver (WebDAV)** | [Cadaver WebDAV](CheatSheets/Tools/cadaver.md) | Cliente WebDAV para subida de webshells, comandos PUT/MOVE y explotación RCE. |
 | **Netcat & Ncat** | [Netcat / Ncat](CheatSheets/Tools/netcat.md) | Reverse shells, listeners, transferencias de archivos y estabilización de TTY. |
 | **Chisel** | [Chisel](CheatSheets/Tools/chisel.md) | Configuración de túneles TCP y proxy SOCKS para pivoting. |
 | **Pivoting Avanzado** | [Redirección de Puertos](CheatSheets/Tools/port_redirection.md) | Enrutamiento y redirecciones con Ligolo-ng y Socat. |
